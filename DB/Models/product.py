@@ -18,4 +18,4 @@ class Product(Base):
     exp_date = Column(Date, nullable=True)
     # Thinking of how to add image blob correctly
 
-    orders = relationship("Order", secondary="order_products", back_populates="products")
+    orders = relationship('Order', secondary='order_products', back_populates='products')

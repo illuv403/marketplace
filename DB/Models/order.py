@@ -24,5 +24,5 @@ class Order(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
     date_created = Column(DateTime, default=datetime.now().replace(microsecond=0))
 
-    user = relationship("User", back_populates="orders")
-    products = relationship("Product", secondary=order_products, back_populates="orders")
+    user = relationship('User', back_populates='orders')
+    products = relationship('Product', secondary=order_products, back_populates='orders')

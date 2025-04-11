@@ -15,5 +15,5 @@ class User(Base):
     email = Column(String(50), nullable=False)
     password = Column(String(50), nullable=False)
 
-    orders = relationship("Order", back_populates="user")
+    orders = relationship('Order', back_populates='user')
 
