@@ -1,4 +1,5 @@
 from flask import session
+from sqlalchemy.sql.functions import concat
 
 from DB.models.product import Product
 from DB.database import db_session
@@ -24,7 +25,7 @@ class ProductRepository:
         except Exception as e:
             return False
 
-    def update(self, id, name, category, price, quantity, exp_date, img_link):
+    def update(self, id, name, category, price, quantity, exp_date):
         try:
             product = self.session.query(Product).filter_by(id=id).first()
             if not product:
@@ -39,8 +40,6 @@ class ProductRepository:
                 product.price = price
             if quantity is not None and product.quantity != quantity:
                 product.quantity = quantity
-            if product.img_link != img_link:
-                product.img_link = img_link
             if product.exp_date != exp_date:
                 product.exp_date = exp_date
 
@@ -49,13 +48,15 @@ class ProductRepository:
         except Exception as e:
             return None
 
-    def create(self, name, category, price, quantity, exp_date, img_link):
+    def create(self, name, category, price, quantity, exp_date):
         try:
+
             if self.session.query(Product).filter(Product.name == name).first() is not None:
                 print(f"Product with name {name} already exists.")
                 return None
+            img_link = "".join(["img/", name.lower() , ".png"])
             product = Product(name=name, category=category, price=price, quantity=quantity, exp_date=exp_date,
-                              img_link=img_link)
+                              img_link = img_link)
             self.session.add(product)
             self.session.commit()
             return product

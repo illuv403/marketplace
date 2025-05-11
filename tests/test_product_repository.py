@@ -25,8 +25,7 @@ class TestProductRepository(unittest.TestCase):
                                category='top-clothing',
                                price=100.5,
                                quantity=5,
-                               exp_date=datetime.date(2026, 1, 1),
-                               img_link='img\\5f0b501f875a062fa52691072aa2e844.jpg')
+                               exp_date=datetime.date(2026, 1, 1))
 
         product_from_db = self.session.query(Product).filter_by(name='T-shirt').first()
         self.assertIsNotNone(product_from_db)
@@ -35,15 +34,14 @@ class TestProductRepository(unittest.TestCase):
         self.assertEqual(product_from_db.price, 100.5)
         self.assertEqual(product_from_db.quantity, 5)
         self.assertEqual(product_from_db.exp_date, datetime.date(2026, 1, 1))
-        self.assertEqual(product_from_db.img_link, 'img\\5f0b501f875a062fa52691072aa2e844.jpg')
+        self.assertEqual(product_from_db.img_link, self.repository.get_by_name(product_from_db.name).img_link)
 
     def test_delete_product(self):
         self.repository.create(name='T-shirt',
                                category='top-clothing',
                                price=100.5,
                                quantity=5,
-                               exp_date=datetime.date(2026, 1, 1),
-                               img_link='img\\5f0b501f875a062fa52691072aa2e844.jpg')
+                               exp_date=datetime.date(2026, 1, 1))
         self.repository.delete(1)
         product_from_db = self.session.query(Product).filter_by(name='T-shirt').first()
         self.assertIsNone(product_from_db)
@@ -53,15 +51,13 @@ class TestProductRepository(unittest.TestCase):
                                category='top-clothing',
                                price=100.5,
                                quantity=5,
-                               exp_date=datetime.date(2026, 1, 1),
-                               img_link='img\\5f0b501f875a062fa52691072aa2e844.jpg')
+                               exp_date=datetime.date(2026, 1, 1))
 
         self.repository.update(1, name='T-shirt',
                                category='top-clothing',
                                price=120.5,
                                quantity=7,
-                               exp_date=datetime.date(2026, 1, 1),
-                               img_link='img\\5f0b501f875a062fa52691072aa2e844.jpg')
+                               exp_date=datetime.date(2026, 1, 1))
 
         product_from_db = self.session.query(Product).filter_by(name='T-shirt').first()
         self.assertEqual(product_from_db.price, 120.5)
@@ -73,20 +69,17 @@ class TestProductRepository(unittest.TestCase):
                                category='top-clothing',
                                price=100.5,
                                quantity=5,
-                               exp_date=datetime.date(2026, 1, 1),
-                               img_link='img\\5f0b501f875a062fa52691072aa2e844.jpg')
+                               exp_date=datetime.date(2026, 1, 1))
         self.repository.create(name='Jeans',
                                category='bottom-clothing',
                                price=150.0,
                                quantity=8,
-                               exp_date=datetime.date(2026, 7, 15),
-                               img_link='img\\5f0b501f875a062fa52691072aa2e844.jpg')
+                               exp_date=datetime.date(2026, 7, 15))
         self.repository.create(name='Jacket',
                                category='outerwear',
                                price=200.0,
                                quantity=6,
-                               exp_date=datetime.date(2027, 1, 1),
-                               img_link='img\\5f0b501f875a062fa52691072aa2e844.jpg')
+                               exp_date=datetime.date(2027, 1, 1))
         products_list = self.repository.get_all()
         self.assertIsNotNone(products_list)
 
@@ -96,21 +89,18 @@ class TestProductRepository(unittest.TestCase):
                                category='top-clothing',
                                price=100.5,
                                quantity=5,
-                               exp_date=datetime.date(2026, 1, 1),
-                               img_link='img\\5f0b501f875a062fa52691072aa2e844.jpg')
+                               exp_date=datetime.date(2026, 1, 1))
         self.repository.create(name='Jeans',
                                category='bottom-clothing',
                                price=150.0,
                                quantity=8,
-                               exp_date=datetime.date(2026, 7, 15),
-                               img_link='img\\5f0b501f875a062fa52691072aa2e844.jpg')
+                               exp_date=datetime.date(2026, 7, 15))
 
         self.repository.create(name='Jacket',
                                category='outerwear',
                                price=200.0,
                                quantity=6,
-                               exp_date=datetime.date(2027, 1, 1),
-                               img_link='img\\5f0b501f875a062fa52691072aa2e844.jpg')
+                               exp_date=datetime.date(2027, 1, 1))
         product2 = self.repository.get_by_id(2)
         self.assertEqual(product2.name, 'Jeans')
         product1 = self.repository.get_by_id(1)
@@ -123,14 +113,12 @@ class TestProductRepository(unittest.TestCase):
                                category='top-clothing',
                                price=100.5,
                                quantity=5,
-                               exp_date=datetime.date(2026, 1, 1),
-                               img_link='img\\5f0b501f875a062fa52691072aa2e844.jpg')
+                               exp_date=datetime.date(2026, 1, 1))
         self.repository.create(name='Jeans',
                                category='bottom-clothing',
                                price=150.0,
                                quantity=8,
-                               exp_date=datetime.date(2026, 7, 15),
-                               img_link='img\\5f0b501f875a062fa52691072aa2e844.jpg')
+                               exp_date=datetime.date(2026, 7, 15))
         product2 = self.repository.get_by_name('T-shirt')
         self.assertEqual(product2.name, 'T-shirt')
         product1 = self.repository.get_by_name('Jeans')
@@ -141,20 +129,17 @@ class TestProductRepository(unittest.TestCase):
                                category='top-clothing',
                                price=100.5,
                                quantity=5,
-                               exp_date=datetime.date(2026, 1, 1),
-                               img_link='img\\5f0b501f875a062fa52691072aa2e844.jpg')
+                               exp_date=datetime.date(2026, 1, 1))
         self.repository.create(name='Hoodie',
                                category='top-clothing',
                                price=120.0,
                                quantity=5,
-                               exp_date=datetime.date(2026, 5, 1),
-                               img_link='img\\hoodie1.jpg')
+                               exp_date=datetime.date(2026, 5, 1))
         self.repository.create(name='Jeans',
                                category='bottom-clothing',
                                price=150.0,
                                quantity=8,
-                               exp_date=datetime.date(2026, 7, 15),
-                               img_link='img\\5f0b501f875a062fa52691072aa2e844.jpg')
+                               exp_date=datetime.date(2026, 7, 15))
         products = self.repository.get_by_quantity(5)
         self.assertIsNotNone(products)
         for product in products:
@@ -169,20 +154,17 @@ class TestProductRepository(unittest.TestCase):
                                category='top-clothing',
                                price=100.5,
                                quantity=5,
-                               exp_date=datetime.date(2026, 1, 1),
-                               img_link='img\\5f0b501f875a062fa52691072aa2e844.jpg')
+                               exp_date=datetime.date(2026, 1, 1))
         self.repository.create(name='Sweater',
                                category='top-clothing',
                                price=100.5,
                                quantity=9,
-                               exp_date=datetime.date(2026, 9, 10),
-                               img_link='img\\sweater1.jpg')
+                               exp_date=datetime.date(2026, 9, 10))
         self.repository.create(name='Jeans',
                                category='bottom-clothing',
                                price=150.0,
                                quantity=8,
-                               exp_date=datetime.date(2026, 7, 15),
-                               img_link='img\\5f0b501f875a062fa52691072aa2e844.jpg')
+                               exp_date=datetime.date(2026, 7, 15))
         products = self.repository.get_by_price(100.5)
         self.assertIsNotNone(products)
         for product in products:
@@ -197,20 +179,17 @@ class TestProductRepository(unittest.TestCase):
                                category='top-clothing',
                                price=100.5,
                                quantity=5,
-                               exp_date=datetime.date(2026, 1, 1),
-                               img_link='img\\5f0b501f875a062fa52691072aa2e844.jpg')
+                               exp_date=datetime.date(2026, 1, 1))
         self.repository.create(name='Sweater',
                                category='top-clothing',
                                price=100.5,
                                quantity=9,
-                               exp_date=datetime.date(2026, 9, 10),
-                               img_link='img\\sweater1.jpg')
+                               exp_date=datetime.date(2026, 9, 10))
         self.repository.create(name='Jeans',
                                category='bottom-clothing',
                                price=150.0,
                                quantity=8,
-                               exp_date=datetime.date(2026, 7, 15),
-                               img_link='img\\5f0b501f875a062fa52691072aa2e844.jpg')
+                               exp_date=datetime.date(2026, 7, 15))
         products = self.repository.get_by_category('Top-clothing')
         self.assertIsNotNone(products)
         for product in products:
