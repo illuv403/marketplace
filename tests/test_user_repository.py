@@ -10,7 +10,7 @@ import bcrypt
 
 class TestUserRepository(unittest.TestCase):
     def setUp(self):
-        self.engine = create_engine('sqlite:///test')
+        self.engine = create_engine('sqlite:///test.db')
         Base.metadata.create_all(self.engine)
         Session = sessionmaker(bind=self.engine)
         self.session = Session()

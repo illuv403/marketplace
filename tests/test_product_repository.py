@@ -8,10 +8,9 @@ from DB.repositories.product_repository import ProductRepository
 from DB.models.order import Order
 from DB.models.user import User
 
-
 class TestProductRepository(unittest.TestCase):
     def setUp(self):
-        self.engine = create_engine('sqlite:///:memory:')
+        self.engine = create_engine('sqlite:///test.db')
         Base.metadata.create_all(self.engine)
         Session = sessionmaker(bind=self.engine)
         self.session = Session()
