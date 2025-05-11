@@ -251,4 +251,4 @@ fabric.properties
 database.db
 
 # We do not include database used in tests
-tests/test
+tests/test.db
