@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/product.css') }}">
+    <title>Marketplace</title>
+</head>
+<body>
+{% block filter_sidebar %}{% endblock %}
+
+<div class="container">
+    <div class="header">
+        {% block top_bar %}
+
+        {% endblock %}
+    </div>
+    <div class="main">
+        {% block container %}{% endblock %}
+    </div>
+    <div class="footer">
+        {% block footer %}
+
+        {% endblock %}
+    </div>
+
+</div>
+
+{% block cart_sidebar %}
+{% endblock %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const cartBtn = document.querySelector('.cart-img');
+    const overlay = document.getElementById('cart-overlay');
+    const closeCart = document.getElementById('close-cart');
+
+    if (cartBtn && overlay && closeCart) {
+        cartBtn.addEventListener('click', () => {
+            overlay.classList.add('active');
+        });
+
+        closeCart.addEventListener('click', () => {
+            overlay.classList.remove('active');
+        });
+
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                overlay.classList.remove('active');
+            }
+        });
+    }
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const filterBtn = document.querySelector('.filter-img');
+    const filterOverlay = document.getElementById('filter-overlay');
+    const closeFilter = document.getElementById('close-filter');
+
+    if (filterBtn && filterOverlay && closeFilter) {
+        filterBtn.addEventListener('click', () => {
+            filterOverlay.classList.add('active');
+        });
+
+        closeFilter.addEventListener('click', () => {
+            filterOverlay.classList.remove('active');
+        });
+
+        filterOverlay.addEventListener('click', (e) => {
+            if (e.target === filterOverlay) {
+                filterOverlay.classList.remove('active');
+            }
+        });
+    }
+});
+</script>
+</body>
+</html>

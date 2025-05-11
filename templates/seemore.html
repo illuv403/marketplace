@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+
+{% block top_bar %}
+    <div class="wrapper">
+        <div class="search-bar">
+            <div class="filter">
+                <img class="filter-img" src="{{ url_for('static', filename='img/filter.png') }}" alt="filter image">
+            </div>
+            <div class="bar">
+                <form onsubmit="" role="search" class="search">
+                    <label for="inp">Search for stuff</label>
+                    <input id="inp" type="search" placeholder="Search..." autofocus required/>
+                    <button type="submit" class="submit">Go</button>
+                </form>
+            </div>
+        </div>
+        <div class="action-menu">
+            <div class="log-reg">
+                <a href="{{ url_for('auth') }}">
+                    <img class="log-img" src="{{ url_for('static', filename='img/user.png') }}" alt="user image">
+                </a>
+            </div>
+            <div class="cart">
+                <img class="cart-img" src="{{ url_for('static', filename='img/cart.png') }}" alt="cart image">
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block container %}
+<a href="{{ url_for('index') }}" class="back-button">← Home</a>
+
+<div class="product-detail-layout">
+    <div class="product-main">
+        <div class="product-left">
+            <img src="{{ url_for('static', filename='img/images.jpeg') }}" alt="dog" class="product-photo">
+            <div class="product-description">
+                <h3>Description</h3>
+                <p>;lfdkf;lkdf;lkd;lfldf</p>
+            </div>
+        </div>
+        <div class="product-info">
+            <h2></h2>
+            <p><strong>Size:</strong> M</p>
+            <p><strong>Color:</strong> Green</p>
+        </div>
+    </div>
+    <div class="product-sidebar">
+        <h3>Sample Products</h3>
+        <ul>
+            {% for i in range(10) %}
+            <li><img src="{{ url_for('static', filename='img/images.jpeg') }}"></li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}
