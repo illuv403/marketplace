@@ -20,5 +20,6 @@ class TestOrderRepository(unittest.TestCase):
         self.session.close()
         Base.metadata.drop_all(self.engine)
 
+
 if __name__ == '__main__':
     unittest.main()
