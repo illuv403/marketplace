@@ -7,6 +7,8 @@ from DB.models.user import User
 Repository class for managing Order table in a database,
 so CRUD operations
 """
+
+
 class OrderRepository:
     def __init__(self, session=None):
         if session is None:
@@ -33,23 +35,57 @@ class OrderRepository:
             self.session.rollback()
             return None
 
-    def get_order_by_id(self, order_id):
-        order = self.session.query(Order).filter_by(id=order_id).first()
-        if order is None:
+    def update_order(self, order_id, new_product_ids=None, new_user_id=None):
+        try:
+            if new_product_ids is None and new_user_id is None:
+                return None
+            order = self.session.query(Order).filter_by(id=order_id).first()
+
+            if new_product_ids is not None:
+                new_products = self.session.query(Product).filter(Product.id.in_(new_product_ids)).all()
+                order.products = new_products
+
+            if new_user_id is not None:
+                order.user = self.session.query(User).filter_by(id=new_user_id).first()
+
+        except Exception as e:
+            print(f'Error: {e}')
+            self.session.rollback()
             return None
-        return order
+
+    def get_order_by_id(self, order_id):
+        try:
+            order = self.session.query(Order).filter_by(id=order_id).first()
+            if order is None:
+                return None
+            return order
+        except Exception as e:
+            print(f'Error: {e}')
+            self.session.rollback()
+            return False
 
     def get_orders_by_user_id(self, user_id):
-        orders = self.session.query(Order).filter_by(user_id=user_id).all()
-        if not orders:
-            return None
-        return orders
+        try:
+            orders = self.session.query(Order).filter_by(user_id=user_id).all()
+            if not orders:
+                return None
+            return orders
+        except Exception as e:
+            print(f'Error: {e}')
+            self.session.rollback()
+            return False
 
     def get_all_orders(self):
-        orders = self.session.query(Order).all()
-        if not orders:
-            return None
-        return orders
+        try:
+            orders = self.session.query(Order).all()
+            if not orders:
+                return None
+            return orders
+        except Exception as e:
+            print(f'Error: {e}')
+            self.session.rollback()
+            return False
+
 
     def delete_order(self, order_id):
         try:
@@ -64,6 +100,7 @@ class OrderRepository:
             print(f'Error: {e}')
             self.session.rollback()
             return False
+
 
     def add_product_to_order(self, order_id, product_id):
         try:
@@ -82,6 +119,7 @@ class OrderRepository:
             self.session.rollback()
             return None
 
+
     def remove_product_from_order(self, order_id, product_id):
         try:
             order = self.get_order_by_id(order_id)
@@ -98,6 +136,7 @@ class OrderRepository:
             print(f'Error: {e}')
             self.session.rollback()
             return None
+
 
     def clear_order_products(self, order_id):
         try:

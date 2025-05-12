@@ -4,6 +4,7 @@ testmodules = [
     'test_product_repository',
     'test_user_repository',
     'test_order_repository',
+    'test_category_repository'
     ]
 
 suite = unittest.TestSuite()
