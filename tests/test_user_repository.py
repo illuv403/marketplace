@@ -5,6 +5,7 @@ from DB.database import Base
 from DB.models.user import User
 from DB.models.order import Order, order_products
 from DB.models.product import Product
+from DB.models.category import Category
 from DB.repositories.user_repository import UserRepository
 import bcrypt
 

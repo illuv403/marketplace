@@ -3,6 +3,7 @@ import unittest
 testmodules = [
     'test_product_repository',
     'test_user_repository',
+    'test_order_repository',
     ]
 
 suite = unittest.TestSuite()

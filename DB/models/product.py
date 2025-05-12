@@ -1,7 +1,6 @@
 from DB.database import Base
-from sqlalchemy import Column, Integer, String, Numeric, Date
+from sqlalchemy import Column, Integer, String, Numeric, Date, ForeignKey
 from sqlalchemy.orm import relationship
-
 
 """
 Product model, stores information about a products, their 
@@ -12,10 +11,12 @@ class Product(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=False)
-    category = Column(String(50), nullable=False)
+    category_id = Column(Integer, ForeignKey('categories.id'), nullable=False)
     price = Column(Numeric(10, 2), nullable=False)
-    quantity = Column(Numeric(10, 2), nullable=False)
+    quantity = Column(Integer, nullable=False)  # Changed to Integer for whole units
     exp_date = Column(Date, nullable=True)
     img_link = Column(String(100), nullable=True)
 
+    category = relationship('Category', back_populates='products')
     orders = relationship('Order', secondary='order_products', back_populates='products')
+
