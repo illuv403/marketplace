@@ -14,17 +14,20 @@ class ProductRepository:
     def __init__(self, session=None):
         self.session = session or db_session
 
-    def delete_product(self, id):
+    def create_product(self, name, category_id, price, quantity, exp_date):
         try:
-            product = self.session.query(Product).filter(Product.id == id).first()
-            if not product:
-                print("No such product")
-                return False
-            self.session.delete(product)
+
+            if self.session.query(Product).filter(Product.name == name).first() is not None:
+                print(f"Product with name {name} already exists.")
+                return None
+            img_link = "".join(["img/", name.lower() , ".png"])
+            product = Product(name=name, category_id=category_id, price=price, quantity=quantity, exp_date=exp_date,
+                              img_link = img_link)
+            self.session.add(product)
             self.session.commit()
-            return True
+            return product
         except Exception as e:
-            return False
+            return None
 
     def update_product(self, id, name, category_id, price, quantity, exp_date):
         try:
@@ -49,21 +52,6 @@ class ProductRepository:
             return product
         except Exception as e:
             self.session.rollback()
-            return None
-
-    def create_product(self, name, category_id, price, quantity, exp_date):
-        try:
-
-            if self.session.query(Product).filter(Product.name == name).first() is not None:
-                print(f"Product with name {name} already exists.")
-                return None
-            img_link = "".join(["img/", name.lower() , ".png"])
-            product = Product(name=name, category_id=category_id, price=price, quantity=quantity, exp_date=exp_date,
-                              img_link = img_link)
-            self.session.add(product)
-            self.session.commit()
-            return product
-        except Exception as e:
             return None
 
     def get_all_products(self):
@@ -128,3 +116,15 @@ class ProductRepository:
         except Exception as e:
             print(f"Error: {e}")
             return None
+
+    def delete_product(self, id):
+        try:
+            product = self.session.query(Product).filter(Product.id == id).first()
+            if not product:
+                print("No such product")
+                return False
+            self.session.delete(product)
+            self.session.commit()
+            return True
+        except Exception as e:
+            return False
