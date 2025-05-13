@@ -7,8 +7,6 @@ from DB.models.product import Product
 Repository class for managing Category table in a database,
 so CRUD operations
 """
-
-
 class CategoryRepository:
     def __init__(self, session=None):
         if session is None:
