@@ -4,7 +4,6 @@ from flask import session, redirect
 
 from DB.repositories.user_repository import UserRepository
 
-
 class AuthService:
     def __init__(self, session):
         self.user_repository = UserRepository(session)
