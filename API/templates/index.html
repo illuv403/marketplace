@@ -1,143 +1,155 @@
 {% extends "base.html" %}
 
 {% block top_bar %}
-<div class="wrapper">
-    <div class="search-bar">
-        <div class="filter">
-            <img class="filter-img" src="{{ url_for('static', filename='img/filter.png') }}" alt="filter image">
+    <div class="wrapper">
+        <div class="search-bar">
+            <div class="filter">
+                <img class="filter-img" src="{{ url_for('static', filename='img/filter.png') }}" alt="filter image">
+            </div>
+            <div class="bar">
+                <form onsubmit="" role="search" class="search">
+                    <label for="inp">Search for products</label>
+                    <input id="inp" type="search" placeholder="Search..." autofocus required/>
+                    <button type="submit" class="submit">Go</button>
+                </form>
+            </div>
         </div>
-        <div class="bar">
-            <form onsubmit="" role="search" class="search">
-                <label for="inp">Search for products</label>
-                <input id="inp" type="search" placeholder="Search..." autofocus required/>
-                <button type="submit" class="submit">Go</button>
-            </form>
+        <div class="action-menu">
+            <div class="log-reg">
+                <a href="{{ url_for('auth') }}">
+                    <img class="log-img" src="{{ url_for('static', filename='img/user.png') }}" alt="user icon">
+                </a>
+            </div>
+            <div class="cart">
+                <img class="cart-img" src="{{ url_for('static', filename='img/cart.png') }}" alt="cart icon">
+            </div>
         </div>
     </div>
-    <div class="action-menu">
-        <div class="log-reg">
-            <a href="{{ url_for('auth') }}">
-                <img class="log-img" src="{{ url_for('static', filename='img/user.png') }}" alt="user icon">
-            </a>
-        </div>
-        <div class="cart">
-            <img class="cart-img" src="{{ url_for('static', filename='img/cart.png') }}" alt="cart icon">
-        </div>
-    </div>
-</div>
 {% endblock %}
 
 {% block container %}
-<div class="product-container">
-    <div class="product-grid">
-        {% for product in products %}
-        <div class="product-wrapper">
-            <div class="product-info">
-                <img class="product-img"
-                     src="{{ url_for('static', filename=product.img_link) }}"
-                     alt= {{ product.name }}>
-                <div class="product-name">
-                    <p>{{ product.name }}</p>
-                </div>
-                <div class="price">
-                    <p>${{ product.price }}</p>
-                </div>
-                <div class="buttons">
-                    <div class="see-more">
-                        <form action="{{ url_for('product') }}" method="get">
-                            <button type="submit">See more</button>
-                        </form>
+    <div class="product-container">
+        <div class="product-grid">
+            {% for product in products %}
+                <div class="product-wrapper">
+                    <div class="product-info">
+                        <img class="product-img"
+                             src="{{ url_for('static', filename=product.img_link) }}"
+                             alt= {{ product.name }}>
+                        <div class="product-name">
+                            <p>{{ product.name }}</p>
+                        </div>
+                        <div class="price">
+                            <p>${{ product.price }}</p>
+                        </div>
+                        <div class="buttons">
+                            <div class="see-more">
+                                <form action="{{ url_for('product') }}" method="get">
+                                    <button type="submit">See more</button>
+                                </form>
+                            </div>
+                            <div class="add-to-cart">
+                                <button>Add to cart</button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="add-to-cart">
-                        <button>Add to cart</button>
-                    </div>
                 </div>
-            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
+        <div class="pagination">
+            {% if page > 1 %}
+                <a href="{{ url_for('index', page=page-1) }}">Previous</a>
+            {% endif %}
+
+            {% for p in range(1, total_pages + 1) %}
+                <a href="{{ url_for('index', page=p) }}" class="{% if p == page %}active{% endif %}">{{ p }}</a>
+            {% endfor %}
+
+            {% if page < total_pages %}
+                <a href="{{ url_for('index', page=page + 1) }}">Next</a>
+            {% endif %}
+        </div>
     </div>
-    <div class="spinner"></div>
-</div>
 {% endblock %}
 
 {% block footer %}
-<div class="foot-container">
-    <div class="info-wrapper">
-        <div class="footer-info">
-            © 2025 Your Store - All rights reserved.
+    <div class="foot-container">
+        <div class="info-wrapper">
+            <div class="footer-info">
+                © 2025 Your Store - All rights reserved.
+            </div>
         </div>
     </div>
-</div>
 {% endblock %}
 
 {% block cart_sidebar %}
-<div id="cart-overlay" class="cart-overlay hidden">
-    <div id="cart-sidebar" class="cart-sidebar" onclick="event.stopPropagation()">
-        <div class="cart-header">
-            <h2>Your Cart</h2>
-            <button id="close-cart">×</button>
-        </div>
+    <div id="cart-overlay" class="cart-overlay hidden">
+        <div id="cart-sidebar" class="cart-sidebar" onclick="event.stopPropagation()">
+            <div class="cart-header">
+                <h2>Your Cart</h2>
+                <button id="close-cart">×</button>
+            </div>
 
-        <div class="cart-body">
-            <div class="cart-items">
-                {% for i in range(6) %}
-                <div class="cart-item">
-                    <img class="cart-item-img"
-                         src="{{ url_for('static', filename='img/images.jpeg') }}"
-                         alt="product image">
-                    <div class="cart-item-details">
-                        <p class="item-name">Sample Item</p>
-                        <p class="item-attrs">Color &bull; Size</p>
-                        <p class="item-price">$32.00</p>
-                        <div class="item-controls">
-                            <select class="item-quantity">
-                                {% for q in range(1, 6) %}
-                                <option value="{{ q }}">{{ q }}</option>
-                                {% endfor %}
-                            </select>
-                            <button class="remove-item">×</button>
+            <div class="cart-body">
+                <div class="cart-items">
+                    {% for i in range(6) %}
+                        <div class="cart-item">
+                            <img class="cart-item-img"
+                                 src="{{ url_for('static', filename='img/images.jpeg') }}"
+                                 alt="product image">
+                            <div class="cart-item-details">
+                                <p class="item-name">Sample Item</p>
+                                <p class="item-attrs">Color &bull; Size</p>
+                                <p class="item-price">$32.00</p>
+                                <div class="item-controls">
+                                    <select class="item-quantity">
+                                        {% for q in range(1, 6) %}
+                                            <option value="{{ q }}">{{ q }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button class="remove-item">×</button>
+                                </div>
+                                <p class="stock-status">
+                                    <span class="stock-check">&#10003;</span> In stock
+                                </p>
+                            </div>
                         </div>
-                        <p class="stock-status">
-                            <span class="stock-check">&#10003;</span> In stock
-                        </p>
-                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
+            </div>
+
+            <div class="cart-summary">
+                <h3>Order Summary</h3>
+                <div class="summary-row"><span>Subtotal</span><span>$99.00</span></div>
+                <div class="summary-row"><span>Shipping</span><span>$5.00</span></div>
+                <div class="summary-row"><span>Tax</span><span>$8.32</span></div>
+                <div class="summary-total"><span>Total</span><span>$112.32</span></div>
+                <button class="checkout-button">Checkout</button>
             </div>
         </div>
-
-        <div class="cart-summary">
-            <h3>Order Summary</h3>
-            <div class="summary-row"><span>Subtotal</span><span>$99.00</span></div>
-            <div class="summary-row"><span>Shipping</span><span>$5.00</span></div>
-            <div class="summary-row"><span>Tax</span><span>$8.32</span></div>
-            <div class="summary-total"><span>Total</span><span>$112.32</span></div>
-            <button class="checkout-button">Checkout</button>
-        </div>
     </div>
-</div>
 {% endblock %}
 
 {% block filter_sidebar %}
-<div id="filter-overlay" class="filter-overlay hidden">
-    <div id="filter-sidebar" class="filter-sidebar" onclick="event.stopPropagation()">
-        <div class="filter-header">
-            <h2>Filters</h2>
-            <button id="close-filter" class="close-button">×</button>
-        </div>
-        <div class="filter-body">
-            <div class="filter-group">
-                <ul class="filter-options">
-                    {% for i in range(10) %}
-                    <li class="filter-checkbox-row">
-                        <input type="checkbox" class="checkbox" id="filter-cat-{{ loop.index }}"
-                               name="filter-cat-{{ loop.index }}">
-                        <span class="cat-name">Category {{ loop.index }}</span>
-                    </li>
-                    {% endfor %}
-                </ul>
+    <div id="filter-overlay" class="filter-overlay hidden">
+        <div id="filter-sidebar" class="filter-sidebar" onclick="event.stopPropagation()">
+            <div class="filter-header">
+                <h2>Filters</h2>
+                <button id="close-filter" class="close-button">×</button>
+            </div>
+            <div class="filter-body">
+                <div class="filter-group">
+                    <ul class="filter-options">
+                        {% for cat in categories %}
+                            <li class="filter-checkbox-row">
+                                <input type="checkbox" class="checkbox" id="filter-cat-{{ cat.id }}"
+                                       name="filter-cat-{{ cat.id }}">
+                                <span class="cat-name"> cat.name </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock %}

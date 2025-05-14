@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 from API.services.main_page_service import PageService
 from DB.database import db_session, init_db
@@ -11,12 +11,14 @@ def create_app():
     init_db()
     product_fill = FillProducts(db_session)
     product_fill.fill_all()
-
+    page_service = PageService(session=db_session)
     @app.route("/")
     def index():
-        page_service = PageService(session=db_session)
-        products = page_service.get_random_products()
-        return render_template('index.html' , products=products)
+
+        page = request.args.get('page', 1, int)
+        products = page_service.get_random_products(page)
+        categories = page_service.get_categories()
+        return render_template('index.html' ,page=page, products=products, total_pages=page_service.total_pages , categories=categories)
 
     @app.route("/auth", methods=['GET', 'POST'])
     def auth():
