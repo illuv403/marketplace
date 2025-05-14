@@ -13,6 +13,7 @@ from DB.repositories.product_repository import ProductRepository
 class PageService:
     def __init__(self, session):
         self.session = session or db_session
+        self.cur_user_id = self.session.get('user_id')
         self.product_repository = ProductRepository(self.session)
         self.category_repository = CategoryRepository(self.session)
         self.product_ids = list(range(1, self.product_repository.get_product_amount()))
@@ -46,8 +47,3 @@ class PageService:
 
     def remember_page_products(self, page_index, products):
         self.page_products[page_index] = products
-
-    def calculate_page_parameters(self):
-
-
-        return

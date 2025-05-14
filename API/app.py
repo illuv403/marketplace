@@ -20,7 +20,8 @@ def create_app():
     def index():
         page = request.args.get("page", 1, int)
         products = page_service.get_random_products(page)
-        return render_template('index.html' , products=products, page=page, total_pages=page_service.total_pages)
+        categories = page_service.get_categories()
+        return render_template('index.html' , products=products, page=page, total_pages=page_service.total_pages, categories=categories)
 
     @app.route('/auth', methods=['GET', 'POST'])
     def auth():
