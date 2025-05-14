@@ -10,7 +10,6 @@ from DB.repositories.category_repository import CategoryRepository
 from DB.repositories.product_repository import ProductRepository
 
 
-
 class PageService:
     def __init__(self, session):
         self.session = session or db_session
