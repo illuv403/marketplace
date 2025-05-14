@@ -252,5 +252,30 @@ class TestProductRepository(unittest.TestCase):
         for product in products1:
             self.assertEqual(product.category.name.lower(), 'bottom-clothing')
 
+    def test_get_product_amount(self):
+        self.repository.create_product(
+            name='T-shirt',
+            category_id=self.category1.id,
+            price=100.5,
+            quantity=5,
+            exp_date=datetime.date(2026, 1, 1)
+        )
+        self.repository.create_product(
+            name='Sweater',
+            category_id=self.category1.id,
+            price=100.5,
+            quantity=9,
+            exp_date=datetime.date(2026, 9, 10)
+        )
+        self.repository.create_product(
+            name='Jeans',
+            category_id=self.category2.id,
+            price=150.0,
+            quantity=8,
+            exp_date=datetime.date(2026, 7, 15)
+        )
+        product_amount = self.repository.get_product_amount()
+        self.assertIsNotNone(product_amount)
+        self.assertEqual(product_amount, 3)
 if __name__ == '__main__':
     unittest.main()

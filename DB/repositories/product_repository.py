@@ -128,3 +128,11 @@ class ProductRepository:
             return True
         except Exception as e:
             return False
+
+    def get_product_amount(self):
+        try:
+            product_amount = self.session.query(Product).count()
+            return product_amount
+        except Exception as e :
+            print("Impossible to get amount of products")
+            return None
