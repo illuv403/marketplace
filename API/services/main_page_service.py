@@ -5,7 +5,6 @@ from DB.database import db_session
 from DB.repositories.product_repository import ProductRepository
 
 
-
 class PageService:
     def __init__(self, session):
         self.session = session or db_session
