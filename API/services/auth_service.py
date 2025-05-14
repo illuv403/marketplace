@@ -39,12 +39,3 @@ class AuthService:
     @staticmethod
     def is_logged_in():
         return 'logged_in' in session and session['logged_in']
-
-    @staticmethod
-    def login_required(f):
-        @wraps(f)
-        def decorated_func(*args, **kwargs):
-            if 'email' not in session:
-                return redirect('/auth')
-            return f(*args, **kwargs)
-        return decorated_func
