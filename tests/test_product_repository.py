@@ -277,5 +277,7 @@ class TestProductRepository(unittest.TestCase):
         product_amount = self.repository.get_product_amount()
         self.assertIsNotNone(product_amount)
         self.assertEqual(product_amount, 3)
+
+
 if __name__ == '__main__':
     unittest.main()
