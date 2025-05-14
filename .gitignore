@@ -252,3 +252,5 @@ database.db
 
 # We do not include database used in tests
 tests/test.db
+
+secret_key.py
