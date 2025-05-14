@@ -2,7 +2,7 @@ import random
 
 from DB.database import db_session
 from DB.repositories.product_repository import ProductRepository
-from API.app import create_app
+
 
 
 class PageService:

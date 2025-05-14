@@ -30,17 +30,17 @@
 {% block container %}
 <div class="product-container">
     <div class="product-grid">
-        {% for i in range(100) %}
+        {% for product in products %}
         <div class="product-wrapper">
             <div class="product-info">
                 <img class="product-img"
-                     src="{{ url_for('static', filename='img/images.jpeg') }}"
-                     alt="product image">
+                     src="{{ url_for('static', filename=product.img_link) }}"
+                     alt= {{ product.name }}>
                 <div class="product-name">
-                    <p>Sample Product Name</p>
+                    <p>{{ product.name }}</p>
                 </div>
                 <div class="price">
-                    <p>$99.99</p>
+                    <p>${{ product.price }}</p>
                 </div>
                 <div class="buttons">
                     <div class="see-more">

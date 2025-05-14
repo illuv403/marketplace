@@ -86,7 +86,6 @@ class FillProducts:
         self.order_repository.create_order(2, [3,6,8])
         self.order_repository.create_order(3, [4,7,2])
 
-    @staticmethod
     def fill_all(self):
         self.fill_categories()
         self.fill_products()
