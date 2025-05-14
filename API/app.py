@@ -6,10 +6,11 @@ from API.services.main_page_service import PageService
 from DB.database import db_session, init_db
 from DB.fill_db import FillProducts
 
+from secret_key import secret_key
 
 def create_app():
     app = Flask(__name__, template_folder='templates')
-    app.secret_key = 'gnlrjjnarvnioernviloergvrvsd;vlckmasl;kdv'
+    app.secret_key = secret_key
     app.permanent_session_lifetime = timedelta(minutes=15)
 
     init_db()
