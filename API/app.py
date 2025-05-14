@@ -16,12 +16,12 @@ def create_app():
     init_db()
     product_fill = FillProducts(db_session)
     product_fill.fill_all()
-
+    page_service = PageService(session=db_session)
     @app.route("/")
     def index():
-        page_service = PageService(session=db_session)
-        products = page_service.get_random_products()
-        return render_template('index.html' , products=products)
+        page = request.args.get("page", 1, int)
+        products = page_service.get_random_products(page)
+        return render_template('index.html' , products=products, page=page, total_pages=page_service.total_pages)
 
     @app.route('/auth', methods=['GET', 'POST'])
     def auth():
