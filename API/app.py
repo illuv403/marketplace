@@ -9,7 +9,7 @@ def create_app():
     app = Flask(__name__, template_folder='templates')
 
     init_db()
-    product_fill = FillProducts()
+    product_fill = FillProducts(db_session)
     product_fill.fill_all()
 
     @app.route("/")

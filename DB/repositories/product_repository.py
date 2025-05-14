@@ -16,11 +16,10 @@ class ProductRepository:
 
     def create_product(self, name, category_id, price, quantity, exp_date):
         try:
-
             if self.session.query(Product).filter(Product.name == name).first() is not None:
                 print(f"Product with name {name} already exists.")
                 return None
-            img_link = "".join(["img/", name.lower() , ".png"])
+            img_link = "".join(["img/products/", name.lower() , ".png"])
             product = Product(name=name, category_id=category_id, price=price, quantity=quantity, exp_date=exp_date,
                               img_link = img_link)
             self.session.add(product)

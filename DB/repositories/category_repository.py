@@ -16,7 +16,7 @@ class CategoryRepository:
 
     def create_category(self, category_name):
         try:
-            if self.session.query(Product).filter(Product.name == category_name.lower()).first() is not None:
+            if self.session.query(Category).filter(Category.name == category_name.lower()).first() is not None:
                 print(f"Category with name {category_name} already exists.")
                 return None
 
