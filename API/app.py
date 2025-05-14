@@ -18,14 +18,13 @@ def create_app():
         products = page_service.get_random_products()
         return render_template('index.html' , products=products)
 
-    @app.route("/auth", methods=['GET', 'POST'])
+    @app.route('/auth', methods=['GET'])
     def auth():
         return render_template('author.html')
 
     @app.route('/product')
     def product():
         return render_template('seemore.html')
-
 
     @app.teardown_appcontext
     def shutdown_session(exception=None):
