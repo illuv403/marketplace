@@ -2,7 +2,7 @@ from flask import Flask, render_template
 from DB.database import db_session, init_db
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__, template_folder='templates')
 
     @app.route("/")
     def index():
@@ -17,8 +17,9 @@ def create_app():
         return render_template('seemore.html')
 
     init_db()
-    app.run(debug=True)
 
     @app.teardown_appcontext
     def shutdown_session(exception=None):
         db_session.remove()
+
+    return app
