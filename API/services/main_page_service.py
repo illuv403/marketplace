@@ -13,7 +13,6 @@ from DB.repositories.product_repository import ProductRepository
 class PageService:
     def __init__(self, session):
         self.session = session or db_session
-        self.cur_user_id = self.session.get('user_id')
         self.product_repository = ProductRepository(self.session)
         self.category_repository = CategoryRepository(self.session)
         self.product_ids = list(range(1, self.product_repository.get_product_amount()))
@@ -35,14 +34,14 @@ class PageService:
             self.remember_page_products(page, products)
         return products
 
-    def get_user_cart(self):
+    def get_user_cart(self, user_id):
         pass
 
     def get_categories(self):
         return self.category_repository.get_all_categories()
 
 
-    def search(self):
+    def search(self, query):
         pass
 
     def remember_page_products(self, page_index, products):
