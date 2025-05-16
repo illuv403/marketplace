@@ -66,7 +66,7 @@ class OrderRepository:
 
     def get_orders_by_user_id(self, user_id):
         try:
-            orders = self.session.query(Order).filter_by(user_id=user_id).all()
+            orders = self.session.query(Order).filter_by(user_id=user_id).first()
             if not orders:
                 return None
             return orders

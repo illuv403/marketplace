@@ -49,7 +49,10 @@
                                 </form>
                             </div>
                             <div class="add-to-cart">
-                                <button>Add to cart</button>
+                                <form method="post" action="{{ url_for('add_to_cart', page=page) }}">
+                                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                                    <button type="submit">Add to cart</button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -92,25 +95,34 @@
 
             <div class="cart-body">
                 <div class="cart-items">
-                    {% for i in range(6) %}
+                    {% for cart_product in cart_products %}
                         <div class="cart-item">
                             <img class="cart-item-img"
-                                 src="{{ url_for('static', filename='img/images.jpeg') }}"
+                                 src="{{ url_for('static', filename=cart_product.img_link) }}"
                                  alt="product image">
                             <div class="cart-item-details">
-                                <p class="item-name">Sample Item</p>
-                                <p class="item-attrs">Color &bull; Size</p>
-                                <p class="item-price">$32.00</p>
+                                <p class="item-name">{{ cart_product.name }}</p>
+                                <p class="item-price">{{ cart_product.price }}</p>
                                 <div class="item-controls">
                                     <select class="item-quantity">
                                         {% for q in range(1, 6) %}
                                             <option value="{{ q }}">{{ q }}</option>
                                         {% endfor %}
                                     </select>
-                                    <button class="remove-item">×</button>
+                                    <div class="remove_from_cart">
+                                        <form method="post" action="{{ url_for('remove_from_cart', page=page) }}">
+                                            <input type="hidden" name="cart_product_id" value="{{ cart_product.id }}">
+                                            <button type="submit">x</button>
+                                        </form>
+                                    </div>
                                 </div>
                                 <p class="stock-status">
-                                    <span class="stock-check">&#10003;</span> In stock
+                                    {% if cart_product.quantity != 0 %}
+                                        <span class="stock-check" style="color : #57bd84">&#10003;</span> In stock
+                                    {% endif %}
+                                    {% if cart_product.quantity == 0 %}
+                                        <span class="stock-check" style="color: #D53733">&#10007;</span> In stock
+                                    {% endif %}
                                 </p>
                             </div>
                         </div>
@@ -120,7 +132,8 @@
 
             <div class="cart-summary">
                 <h3>Order Summary</h3>
-                <div class="summary-row"><span>Subtotal</span><span>$99.00</span></div>
+                {% set subtotal = cart_products | sum(attribute='price') %}
+                <div class="summary-row"><span>Subtotal</span><span>${{ '%.2f' % subtotal }}</span></div>
                 <div class="summary-row"><span>Shipping</span><span>$5.00</span></div>
                 <div class="summary-row"><span>Tax</span><span>$8.32</span></div>
                 <div class="summary-total"><span>Total</span><span>$112.32</span></div>
