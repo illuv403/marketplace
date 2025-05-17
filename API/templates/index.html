@@ -7,9 +7,9 @@
                 <img class="filter-img" src="{{ url_for('static', filename='img/filter.png') }}" alt="filter image">
             </div>
             <div class="bar">
-                <form onsubmit="" role="search" class="search">
+                <form action="{{ url_for('search') }}" method="get" role="search" class="search">
                     <label for="inp">Search for products</label>
-                    <input id="inp" type="search" placeholder="Search..." autofocus required/>
+                    <input id="inp" type="search" name="search_text" placeholder="Search..." autofocus required/>
                     <button type="submit" class="submit">Go</button>
                 </form>
             </div>

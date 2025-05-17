@@ -1,3 +1,5 @@
+from difflib import get_close_matches
+
 from flask import Flask, render_template, redirect, url_for, request, session
 from datetime import timedelta
 
@@ -6,6 +8,7 @@ from API.services.auth_service import AuthService
 from API.services.main_page_service import PageService
 from DB.database import db_session, init_db
 from DB.fill_db import FillProducts
+from DB.repositories.product_repository import ProductRepository
 from DB.repositories.user_repository import UserRepository
 
 from secret_key import secret_key
@@ -82,10 +85,9 @@ def create_app():
         AuthService.end_session()
         return redirect(url_for('auth'))
 
-    @app.route('/product')
+    @app.route('/product}')
     def product():
         return render_template('seemore.html')
-
 
     @app.route('/add_to_cart', methods=['POST'])
     def add_to_cart():
@@ -134,6 +136,43 @@ def create_app():
         session['cart'] = []
 
         return redirect(url_for('index', page=request.args.get('page', 1)))
+
+    @app.route('/search', methods=['GET'])
+    def search():
+        search_text = request.args.get('search_text', '')
+        if not search_text:
+            return redirect(url_for('index'))
+
+        product_repo = ProductRepository(session=db_session)
+        products = product_repo.get_all_products()
+
+        product_names = []
+        for product in products:
+            product_names.append(product.name)
+
+        matches = get_close_matches(search_text, product_names, cutoff=0.5)
+
+        matched_products = []
+        for product in products:
+            if product.name in matches:
+                matched_products.append(product)
+
+        categories = page_service.get_categories()
+        cart_product_ids = session.get('cart', [])
+
+        cart_products = []
+        for product_id in cart_product_ids:
+            product = page_service.get_products_from_cart_by_id(product_id)
+            cart_products.append(product)
+
+        return render_template(
+            'index.html',
+            products=matched_products,
+            page=1,
+            total_pages=1,
+            categories=categories,
+            cart_products=cart_products
+        )
 
     @app.teardown_appcontext
     def shutdown_session(exception=None):
