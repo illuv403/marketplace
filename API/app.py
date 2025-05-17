@@ -1,10 +1,12 @@
 from flask import Flask, render_template, redirect, url_for, request, session
 from datetime import timedelta
 
+from API.services import email_sending_service
 from API.services.auth_service import AuthService
 from API.services.main_page_service import PageService
 from DB.database import db_session, init_db
 from DB.fill_db import FillProducts
+from DB.repositories.user_repository import UserRepository
 
 from secret_key import secret_key
 
@@ -161,6 +163,26 @@ def create_app():
                 cart[product_id] = max(1, cart[product_id] - 1)
 
         session['cart'] = cart
+        return redirect(url_for('index', page=request.args.get('page', 1)))
+
+    @app.route('/checkout', methods=['POST'])
+    def checkout():
+        if not AuthService.is_logged_in():
+            return redirect(url_for('auth'))
+
+        user_id = session.get('user_id')
+        user_repo = UserRepository(session=db_session)
+        user = user_repo.get_user_by_id(user_id)
+
+        cart_ids = session.get('cart', [])
+        product_list = []
+        for cart_id in cart_ids:
+            product_list.append(page_service.get_products_from_cart_by_id(cart_id))
+
+        email_sending_service.send_email(user.email, product_list)
+
+        session['cart'] = []
+
         return redirect(url_for('index', page=request.args.get('page', 1)))
 
     @app.teardown_appcontext
