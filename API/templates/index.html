@@ -104,11 +104,13 @@
                                 <p class="item-name">{{ cart_product.name }}</p>
                                 <p class="item-price">{{ cart_product.price }}</p>
                                 <div class="item-controls">
-                                    <select class="item-quantity">
-                                        {% for q in range(1, 6) %}
-                                            <option value="{{ q }}">{{ q }}</option>
-                                        {% endfor %}
-                                    </select>
+                                    <form method="post" action="{{ url_for('update_cart_product_quantity') }}"
+                                          class="quantity-form">
+                                        <input type="hidden" name="product_id" value="{{ cart_product.id }}">
+                                        <button type="submit" name="action" value="dec">-</button>
+                                        <span>{{ cart_product.local_quantity }}</span>
+                                        <button type="submit" name="action" value="inc">+</button>
+                                    </form>
                                     <div class="remove_from_cart">
                                         <form method="post" action="{{ url_for('remove_from_cart', page=page) }}">
                                             <input type="hidden" name="cart_product_id" value="{{ cart_product.id }}">
@@ -132,12 +134,11 @@
 
             <div class="cart-summary">
                 <h3>Order Summary</h3>
-                {% set subtotal = cart_products | sum(attribute='price') %}
-                <div class="summary-row"><span>Subtotal</span><span>${{ '%.2f' % subtotal }}</span></div>
-                <div class="summary-row"><span>Shipping</span><span>$5.00</span></div>
-                <div class="summary-row"><span>Tax</span><span>$8.32</span></div>
-                <div class="summary-total"><span>Total</span><span>$112.32</span></div>
-                <button class="checkout-button">Checkout</button>
+                <div class="summary-row"><span>Subtotal</span><span>${{ '%.2f' | format(subtotal) }}</span></div>
+                <div class="summary-row"><span>Shipping</span><span>${{ '%.2f' | format(shipping) }}</span></div>
+                <div class="summary-row"><span>Tax</span><span>${{ '%.2f' | format(tax) }}</span></div>
+                <div class="summary-total"><span>Total</span><span>${{ '%.2f' | format(total) }}</span></div>
+                <button type="submit">Checkout</button>
             </div>
         </div>
     </div>

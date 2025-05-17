@@ -26,16 +26,39 @@ def create_app():
         products = page_service.get_random_products(page)
         categories = page_service.get_categories()
 
-        cart_product_ids = session.get('cart', [])
-        cart_products = [page_service.get_products_from_cart_by_id(product_id) for product_id in cart_product_ids]
-        return render_template('index.html', products=products, page=page, total_pages=page_service.total_pages,
-                               categories=categories, cart_products=cart_products)
+        cart = session.get('cart', {})
+        cart_products = []
+        subtotal = 0
+
+        for product_id, quantity in cart.items():
+            product = page_service.get_products_from_cart_by_id(product_id)
+            if product:
+                product.local_quantity = quantity
+                cart_products.append(product)
+                subtotal += product.price * quantity
+
+        shipping = 5.00 if subtotal > 0 else 0
+        tax = round(float(subtotal) * 0.07, 2)
+        total = round(float(subtotal) + shipping + tax, 2)
+        return render_template('index.html',
+                               products=products,
+                               page=page,
+                               total_pages=page_service.total_pages,
+                               categories=categories,
+                               cart_products=cart_products,
+                               subtotal=subtotal,
+                               shipping=shipping,
+                               tax=tax,
+                               total=total)
 
     @app.route('/auth', methods=['GET', 'POST'])
     def auth():
         if AuthService.is_logged_in() and request.method == 'GET':
             products_in_cart = page_service.get_user_cart(session.get('user_id'))
-            session['cart'] = [product_in_cart.id for product_in_cart in products_in_cart]
+            cart = {}
+            for product_in_cart in products_in_cart:
+                cart[str(product_in_cart.id)] = 1
+            session['cart'] = cart
             return redirect(url_for('index'))
 
         if request.method == 'POST':
@@ -49,7 +72,10 @@ def create_app():
                 session.permanent = True
                 auth_service.new_session(user)
                 products_in_cart = page_service.get_user_cart(user.id)
-                session['cart'] = [product_in_cart.id for product_in_cart in products_in_cart]
+                cart = {}
+                for product_in_cart in products_in_cart:
+                    cart[str(product_in_cart.id)] = 1
+                session['cart'] = cart
                 return redirect(url_for('index'))
 
         return render_template('author.html')
@@ -70,7 +96,10 @@ def create_app():
                 session.permanent = True
                 auth_service.new_session(user)
                 products_in_cart = page_service.get_user_cart(user.id)
-                session['cart'] = [product_in_cart.id for product_in_cart in products_in_cart]
+                cart = {}
+                for product_in_cart in products_in_cart:
+                    cart[str(product_in_cart.id)] = 1
+                session['cart'] = cart
                 return redirect(url_for('index'))
 
         return render_template('regist.html')
@@ -84,7 +113,6 @@ def create_app():
     def product():
         return render_template('seemore.html')
 
-
     @app.route('/add_to_cart', methods=['POST'])
     def add_to_cart():
         if not AuthService.is_logged_in():
@@ -95,8 +123,10 @@ def create_app():
 
         if user_id and product_id:
             page_service.add_product_to_cart(user_id=user_id, product_id=product_id)
-            session['cart'] = [p.id for p in page_service.get_user_cart(user_id)]
-
+            cart = session.get('cart', {})
+            if product_id not in cart:
+                cart[product_id] = 1
+            session['cart'] = cart
         return redirect(url_for('index', page=request.args.get('page', 1)))
 
     @app.route('/remove_from_cart', methods=['POST'])
@@ -108,9 +138,29 @@ def create_app():
         product_id = request.form.get('cart_product_id')
 
         if user_id and product_id:
-            page_service.remove_product_from_cart(user_id=user_id, product_id=product_id)
-            session['cart'] = [p.id for p in page_service.get_user_cart(user_id)]
 
+            page_service.remove_product_from_cart(user_id=user_id, product_id=product_id)
+            cart = session.get('cart', {})
+            if product_id in cart:
+                del cart[product_id]
+            session['cart'] = cart
+
+        return redirect(url_for('index', page=request.args.get('page', 1)))
+
+    @app.route('/update_cart_product_quantity', methods=['POST'])
+    def update_cart_product_quantity():
+        product_id = request.form.get('product_id')
+        action = request.form.get('action')
+
+        cart = session.get('cart', {})
+
+        if product_id in cart:
+            if action == 'inc':
+                cart[product_id] += 1
+            elif action == 'dec':
+                cart[product_id] = max(1, cart[product_id] - 1)
+
+        session['cart'] = cart
         return redirect(url_for('index', page=request.args.get('page', 1)))
 
     @app.teardown_appcontext
