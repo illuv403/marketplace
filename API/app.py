@@ -59,11 +59,7 @@ def create_app():
     @app.route('/auth', methods=['GET', 'POST'])
     def auth():
         if AuthService.is_logged_in() and request.method == 'GET':
-            products_in_cart = page_service.get_user_cart(session.get('user_id'))
-            cart = {}
-            for product_in_cart in products_in_cart:
-                cart[str(product_in_cart.id)] = 1
-            session['cart'] = cart
+            session['cart'] = {}
             return redirect(url_for('index'))
 
         if request.method == 'POST':
@@ -76,11 +72,7 @@ def create_app():
             if user:
                 session.permanent = True
                 auth_service.new_session(user)
-                products_in_cart = page_service.get_user_cart(user.id)
-                cart = {}
-                for product_in_cart in products_in_cart:
-                    cart[str(product_in_cart.id)] = 1
-                session['cart'] = cart
+                session['cart'] = {}
                 return redirect(url_for('index'))
 
         return render_template('author.html')
@@ -100,11 +92,7 @@ def create_app():
             if user:
                 session.permanent = True
                 auth_service.new_session(user)
-                products_in_cart = page_service.get_user_cart(user.id)
-                cart = {}
-                for product_in_cart in products_in_cart:
-                    cart[str(product_in_cart.id)] = 1
-                session['cart'] = cart
+                session['cart'] = {}
                 return redirect(url_for('index'))
 
         return render_template('regist.html')
@@ -127,7 +115,6 @@ def create_app():
         product_id = request.form.get('product_id')
 
         if user_id and product_id:
-            page_service.add_product_to_cart(user_id=user_id, product_id=product_id)
             cart = session.get('cart', {})
             if product_id not in cart:
                 cart[product_id] = 1
@@ -143,8 +130,6 @@ def create_app():
         product_id = request.form.get('cart_product_id')
 
         if user_id and product_id:
-
-            page_service.remove_product_from_cart(user_id=user_id, product_id=product_id)
             cart = session.get('cart', {})
             if product_id in cart:
                 del cart[product_id]
