@@ -255,3 +255,4 @@ tests/test.db
 
 secret_key.py
 email_creds.py
+.DS_Store
