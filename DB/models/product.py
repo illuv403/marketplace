@@ -13,7 +13,7 @@ class Product(Base):
     name = Column(String(50), nullable=False)
     category_id = Column(Integer, ForeignKey('categories.id'), nullable=False)
     price = Column(Numeric(10, 2), nullable=False)
-    quantity = Column(Integer, nullable=False)  # Changed to Integer for whole units
+    quantity = Column(Integer, nullable=False)
     exp_date = Column(Date, nullable=True)
     img_link = Column(String(100), nullable=True)
 
