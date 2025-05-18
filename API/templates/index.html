@@ -138,7 +138,9 @@
                 <div class="summary-row"><span>Shipping</span><span>${{ '%.2f' | format(shipping) }}</span></div>
                 <div class="summary-row"><span>Tax</span><span>${{ '%.2f' | format(tax) }}</span></div>
                 <div class="summary-total"><span>Total</span><span>${{ '%.2f' | format(total) }}</span></div>
-                <button type="submit">Checkout</button>
+                <form action="{{ url_for('checkout') }}" method="post">
+                    <button type="submit">Checkout</button>
+                </form>
             </div>
         </div>
     </div>

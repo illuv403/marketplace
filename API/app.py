@@ -114,7 +114,7 @@ def create_app():
         AuthService.end_session()
         return redirect(url_for('auth'))
 
-    @app.route('/product}')
+    @app.route('/product')
     def product():
         return render_template('seemore.html')
 
@@ -177,14 +177,14 @@ def create_app():
         user_repo = UserRepository(session=db_session)
         user = user_repo.get_user_by_id(user_id)
 
-        cart_ids = session.get('cart', [])
+        cart_ids = session.get('cart', {})
         product_list = []
         for cart_id in cart_ids:
             product_list.append(page_service.get_products_from_cart_by_id(cart_id))
 
         email_sending_service.send_email(user.email, product_list)
 
-        session['cart'] = []
+        session['cart'] = {}
 
         return redirect(url_for('index', page=request.args.get('page', 1)))
 
@@ -209,12 +209,13 @@ def create_app():
                 matched_products.append(product)
 
         categories = page_service.get_categories()
-        cart_product_ids = session.get('cart', [])
+        cart = session.get('cart', {})
 
         cart_products = []
-        for product_id in cart_product_ids:
+        for product_id in cart:
             product = page_service.get_products_from_cart_by_id(product_id)
-            cart_products.append(product)
+            if product:
+                cart_products.append(product)
 
         return render_template(
             'index.html',
