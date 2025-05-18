@@ -7,8 +7,6 @@ from DB.models.user import User
 Repository class for managing Order table in a database,
 so CRUD operations
 """
-
-
 class OrderRepository:
     def __init__(self, session=None):
         if session is None:
@@ -66,7 +64,7 @@ class OrderRepository:
 
     def get_orders_by_user_id(self, user_id):
         try:
-            orders = self.session.query(Order).filter_by(user_id=user_id).first()
+            orders = self.session.query(Order).filter_by(user_id=user_id).all()
             if not orders:
                 return None
             return orders
