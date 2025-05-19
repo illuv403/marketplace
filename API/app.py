@@ -53,6 +53,7 @@ def create_app():
         shipping = 5.00 if subtotal > 0 else 0
         tax = round(float(subtotal) * 0.07, 2)
         total = round(float(subtotal) + shipping + tax, 2)
+        session['total'] = total
 
         return render_template(
             'index.html',

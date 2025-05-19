@@ -9,4 +9,4 @@ if __name__ == '__main__':
     app = create_app()
 
     # Run the app in debug mode for development
-    app.run(debug=True)
+    app.run()

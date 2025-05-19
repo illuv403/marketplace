@@ -1,4 +1,5 @@
 import smtplib
+from flask import session
 import email_creds  # Contains the sender email and password
 
 
@@ -14,11 +15,17 @@ def send_email(email_to, products):
     # Fetch sender credentials from the external module
     email = email_creds.email
     password = email_creds.password
+    cart = session['cart']
+    total = session['total']
 
     # Compose the email body with the product list
     body = 'Thank You for ordering from us! Here are the products you ordered:\n'
     for product in products:
-        body += f'{product.name}\n'
+        body += f'{product.name} in quantity of {cart[str(product.id)]}\n'
+
+    body += f'\nYour total order amount is ${total:.2f}.'
+    body += '\nPlease visit our website to see the products we have in stock.'
+    body += '\nHave a great day!'
 
     # Construct the full email message
     message = 'Subject: Thank You for your order!\n'
