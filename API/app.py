@@ -1,6 +1,7 @@
 from difflib import get_close_matches
+from itertools import product
 
-from flask import Flask, render_template, redirect, url_for, request, session
+from flask import Flask, render_template, redirect, url_for, request, session, flash
 from datetime import timedelta
 
 from API.services import email_sending_service
@@ -74,6 +75,8 @@ def create_app():
                 auth_service.new_session(user)
                 session['cart'] = {}
                 return redirect(url_for('index'))
+            else:
+                flash('Invalid email or password. Try again.')
 
         return render_template('author.html')
 
@@ -81,19 +84,28 @@ def create_app():
     def register():
         if request.method == 'POST':
 
-            user = auth_service.register_user(
-                name=request.form['name'],
-                surname=request.form['surname'],
-                login=request.form['login'],
-                email=request.form['email'],
-                password=request.form['password']
-            )
+            password = request.form['password']
+            if auth_service.password_check(password):
+                user = auth_service.register_user(
+                    name=request.form['name'],
+                    surname=request.form['surname'],
+                    login=request.form['login'],
+                    email=request.form['email'],
+                    password= password
+                )
 
-            if user:
-                session.permanent = True
-                auth_service.new_session(user)
-                session['cart'] = {}
-                return redirect(url_for('index'))
+                if user:
+                    session.permanent = True
+                    auth_service.new_session(user)
+                    session['cart'] = {}
+                    return redirect(url_for('index'))
+            else:
+                flash('Your password dont meet security conditions.'
+                    ' At least 8 symbols.'
+                    ' At least 1 lowercase letter.'
+                    ' At least 1 uppercase letter.'
+                    ' At least 1 digit.'
+                    ' At least 1 special symbol.')
 
         return render_template('regist.html')
 
@@ -102,21 +114,17 @@ def create_app():
         AuthService.end_session()
         return redirect(url_for('auth'))
 
-    @app.route('/product')
-    def product():
-        return render_template('seemore.html')
 
     @app.route('/add_to_cart', methods=['POST'])
     def add_to_cart():
         if not AuthService.is_logged_in():
             return redirect(url_for('auth'))
 
-        user_id = session.get('user_id')
         product_id = request.form.get('product_id')
-
-        if user_id and product_id:
+        product_repo = ProductRepository(session=db_session)
+        if product_id:
             cart = session.get('cart', {})
-            if product_id not in cart:
+            if product_id not in cart and product_repo.get_product_by_id(product_id).quantity >= 1 :
                 cart[product_id] = 1
             session['cart'] = cart
         return redirect(url_for('index', page=request.args.get('page', 1)))
@@ -126,10 +134,9 @@ def create_app():
         if not AuthService.is_logged_in():
             return redirect(url_for('auth'))
 
-        user_id = session.get('user_id')
         product_id = request.form.get('cart_product_id')
 
-        if user_id and product_id:
+        if product_id:
             cart = session.get('cart', {})
             if product_id in cart:
                 del cart[product_id]
@@ -143,10 +150,14 @@ def create_app():
         action = request.form.get('action')
 
         cart = session.get('cart', {})
-
+        product_repo = ProductRepository(session=db_session)
         if product_id in cart:
             if action == 'inc':
-                cart[product_id] += 1
+                product = product_repo.get_product_by_id(product_id)
+                if product.quantity >= cart[product_id] + 1 :
+                    cart[product_id] += 1
+                else:
+                    flash('There is not that much in stock.', category=product_id)
             elif action == 'dec':
                 cart[product_id] = max(1, cart[product_id] - 1)
 
@@ -160,13 +171,15 @@ def create_app():
 
         user_id = session.get('user_id')
         user_repo = UserRepository(session=db_session)
+        product_repo = ProductRepository(session=db_session)
         user = user_repo.get_user_by_id(user_id)
 
         cart_ids = session.get('cart', {})
         product_list = []
         for cart_id in cart_ids:
             product_list.append(page_service.get_products_from_cart_by_id(cart_id))
-
+            product = product_repo.get_product_by_id(cart_id)
+            product_repo.update_product(cart_id, None, None,None, product.quantity - cart_ids[cart_id], None)
         email_sending_service.send_email(user.email, product_list)
 
         session['cart'] = {}
@@ -195,6 +208,7 @@ def create_app():
 
         categories = page_service.get_categories()
         cart = session.get('cart', {})
+        subtotal = 0
 
         cart_products = []
         for product_id in cart:
@@ -202,17 +216,73 @@ def create_app():
             if product:
                 cart_products.append(product)
 
+        shipping = 5.00 if subtotal > 0 else 0
+        tax = round(float(subtotal) * 0.07, 2)
+        total = round(float(subtotal) + shipping + tax, 2)
+
         return render_template(
             'index.html',
             products=matched_products,
             page=1,
             total_pages=1,
             categories=categories,
-            cart_products=cart_products
+            cart_products=cart_products,
+            subtotal=subtotal,
+            shipping=shipping,
+            tax=tax,
+            total=total,
+            isSearch=True
         )
+
+    @app.route('/search_by_cat', methods=['POST'])
+    def search_by_cat():
+        products_by_cats = []
+        product_repo = ProductRepository(session=db_session)
+
+        for category_name in request.form:
+            products_by_cat = product_repo.get_product_by_category(category_name)
+            if products_by_cat:
+                for gotten_product in products_by_cat:
+                    products_by_cats.append(gotten_product)
+
+        categories = page_service.get_categories()
+        cart = session.get('cart', {})
+        subtotal = 0
+        cart_products = []
+        for product_id in cart:
+            product = page_service.get_products_from_cart_by_id(product_id)
+            if product:
+                cart_products.append(product)
+
+        shipping = 5.00 if subtotal > 0 else 0
+        tax = round(float(subtotal) * 0.07, 2)
+        total = round(float(subtotal) + shipping + tax, 2)
+
+        return render_template(
+            'index.html',
+            products=products_by_cats,
+            page=1,
+            total_pages=1,
+            categories=categories,
+            cart_products=cart_products,
+            subtotal=subtotal,
+            shipping=shipping,
+            tax=tax,
+            total=total,
+            isSearch=True
+        )
+
+    @app.route('/clear_cart', methods=['POST'])
+    def clear_cart():
+        session['cart'] = {}
+
+        return redirect(url_for('index', page=request.args.get('page', 1)))
 
     @app.teardown_appcontext
     def shutdown_session(exception=None):
         db_session.remove()
 
     return app
+
+
+

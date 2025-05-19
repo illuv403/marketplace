@@ -13,6 +13,9 @@
                     <button type="submit" class="submit">Go</button>
                 </form>
             </div>
+            {% if isSearch %}
+                <a href="{{ url_for('index') }}" class="back-button-bar">Home</a>
+            {% endif %}
         </div>
         <div class="action-menu">
             <div class="log-reg">
@@ -43,11 +46,6 @@
                             <p>${{ product.price }}</p>
                         </div>
                         <div class="buttons">
-                            <div class="see-more">
-                                <form action="{{ url_for('product') }}" method="get">
-                                    <button type="submit">See more</button>
-                                </form>
-                            </div>
                             <div class="add-to-cart">
                                 <form method="post" action="{{ url_for('add_to_cart', page=page) }}">
                                     <input type="hidden" name="product_id" value="{{ product.id }}">
@@ -55,6 +53,9 @@
                                 </form>
                             </div>
                         </div>
+                        {% if product.quantity == 0 %}
+                            <p style="color:#D53733;">not in stock</p>
+                        {% endif %}
                     </div>
                 </div>
             {% endfor %}
@@ -111,6 +112,7 @@
                                         <span>{{ cart_product.local_quantity }}</span>
                                         <button type="submit" name="action" value="inc">+</button>
                                     </form>
+
                                     <div class="remove_from_cart">
                                         <form method="post" action="{{ url_for('remove_from_cart', page=page) }}">
                                             <input type="hidden" name="cart_product_id" value="{{ cart_product.id }}">
@@ -118,6 +120,12 @@
                                         </form>
                                     </div>
                                 </div>
+                                {% set messages = get_flashed_messages(with_categories=true) %}
+                                {% for category, message in messages %}
+                                    {% if category == cart_product.id|string %}
+                                        <p style="color:#D53733;">{{ message }}</p>
+                                    {% endif %}
+                                {% endfor %}
                                 <p class="stock-status">
                                     {% if cart_product.quantity != 0 %}
                                         <span class="stock-check" style="color : #57bd84">&#10003;</span> In stock
@@ -131,7 +139,9 @@
                     {% endfor %}
                 </div>
             </div>
-
+            <form action="{{ url_for('clear_cart') }}" method="post">
+                    <button type="submit" class="clear_button">Clear cart</button>
+            </form>
             <div class="cart-summary">
                 <h3>Order Summary</h3>
                 <div class="summary-row"><span>Subtotal</span><span>${{ '%.2f' | format(subtotal) }}</span></div>
@@ -139,7 +149,7 @@
                 <div class="summary-row"><span>Tax</span><span>${{ '%.2f' | format(tax) }}</span></div>
                 <div class="summary-total"><span>Total</span><span>${{ '%.2f' | format(total) }}</span></div>
                 <form action="{{ url_for('checkout') }}" method="post">
-                    <button type="submit">Checkout</button>
+                    <button type="submit" class="checkout-button">Checkout</button>
                 </form>
             </div>
         </div>
@@ -155,15 +165,16 @@
             </div>
             <div class="filter-body">
                 <div class="filter-group">
-                    <ul class="filter-options">
+                    <form action="{{ url_for('search_by_cat') }}" method="post" class="filter-options">
                         {% for cat in categories %}
-                            <li class="filter-checkbox-row">
-                                <input type="checkbox" class="checkbox" id="filter-cat-{{ cat.id }}"
-                                       name="filter-cat-{{ cat.id }}">
+                            <div class="filter-checkbox-row">
+                                <input type="checkbox" class="checkbox" id="{{ cat.id }}"
+                                       name="{{ cat.name }}">
                                 <span class="cat-name">{{ cat.name }}</span>
-                            </li>
+                            </div>
                         {% endfor %}
-                    </ul>
+                        <button type="submit" class="checkout-button">Search</button>
+                    </form>
                 </div>
             </div>
         </div>
