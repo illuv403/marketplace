@@ -182,7 +182,7 @@ def create_app():
                 else:
                     flash('There is not that much in stock.', category=product_id)
             elif action == 'dec':
-                cart[product_id] = max(1, cart[product_id] - 1)
+                cart[product_id] = cart[product_id] - 1 if cart[product_id] > 1 else 1
 
         session['cart'] = cart
         return redirect(url_for('index', page=request.args.get('page', 1)))
