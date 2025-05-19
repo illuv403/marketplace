@@ -305,6 +305,7 @@ def create_app():
         """
         Remove all products from the cart.
         """
+
         session['cart'] = {}
         return redirect(url_for('index', page=request.args.get('page', 1)))
 
