@@ -3,111 +3,135 @@ from DB.models.category import Category
 from DB.models.product import Product
 
 
-"""
-Repository class for managing Category table in a database,
-so CRUD operations
-"""
 class CategoryRepository:
+    """Repository class for managing Category table in a database.
+
+    Handles CRUD (Create, Read, Update, Delete) operations for the Category model.
+    """
+
     def __init__(self, session=None):
-        if session is None:
-            self.session = db_session
-        else:
-            self.session = session
+        """Initialize with optional custom database session."""
+        self.session = session if session is not None else db_session
 
     def create_category(self, category_name):
+        """Create a new category with the given name."""
         try:
-            if self.session.query(Category).filter(Category.name == category_name.lower()).first() is not None:
+            category_exists = self.session.query(Category).filter(
+                Category.name == category_name.lower()
+            ).first() is not None
+
+            if category_exists:
                 print(f"Category with name {category_name} already exists.")
                 return None
 
             category = Category(name=category_name.lower())
-
             self.session.add(category)
             self.session.commit()
             return category
+
         except Exception as e:
             print(f'Error: {e}')
             self.session.rollback()
             return None
 
     def update_category(self, category_id, category_name):
+        """Update an existing category's name."""
         try:
-            if self.session.query(Category).filter(Category.id == category_id).first() is None:
-                print(f"Category with name {category_name} does not exist.")
+            category = self.session.query(Category).filter(
+                Category.id == category_id
+            ).first()
+
+            if category is None:
+                print(f"Category with id {category_id} does not exist.")
                 return None
 
-            category = self.session.query(Category).filter(Category.id == category_id).first()
             category.name = category_name
             self.session.commit()
             return category
+
         except Exception as e:
             print(f'Error: {e}')
             self.session.rollback()
             return None
 
     def get_category_by_id(self, category_id):
+        """Retrieve a category by its ID."""
         try:
-            if self.session.query(Category).filter(Category.id == category_id).first() is None:
+            category = self.session.query(Category).filter_by(id=category_id).first()
+
+            if category is None:
                 print(f"Category with id {category_id} does not exist.")
                 return None
 
-            category = self.session.query(Category).filter_by(id=category_id).first()
             return category
+
         except Exception as e:
             print(f'Error: {e}')
             self.session.rollback()
             return None
 
     def get_category_by_name(self, category_name):
+        """Retrieve a category by its name."""
         try:
-            if self.session.query(Category).filter(Category.name == category_name).first() is None:
+            category = self.session.query(Category).filter_by(name=category_name).first()
+
+            if category is None:
                 print(f"Category with name {category_name} does not exist.")
                 return None
 
-            category = self.session.query(Category).filter_by(name=category_name).first()
             return category
+
         except Exception as e:
             print(f'Error: {e}')
             self.session.rollback()
             return None
 
     def get_all_categories(self):
+        """Retrieve all categories from the database."""
         try:
             categories = self.session.query(Category).all()
+
             if not categories:
                 return None
+
             return categories
+
         except Exception as e:
             print(f'Error: {e}')
             self.session.rollback()
             return None
 
     def delete_category_by_id(self, category_id):
+        """Delete a category by its ID."""
         try:
+            category = self.session.query(Category).filter_by(id=category_id).first()
 
-            if self.session.query(Category).filter(Category.id == category_id).first() is None:
+            if category is None:
                 print(f"Category with id {category_id} does not exist.")
                 return None
-            category = self.session.query(Category).filter_by(id=category_id).first()
 
             self.session.delete(category)
             self.session.commit()
             return category
+
         except Exception as e:
             print(f'Error: {e}')
             self.session.rollback()
             return None
 
     def delete_category_by_name(self, category_name):
+        """Delete a category by its name."""
         try:
-            if self.session.query(Category).filter(Category.name == category_name).first() is None:
+            category = self.session.query(Category).filter_by(name=category_name).first()
+
+            if category is None:
                 print(f"Category with name {category_name} does not exist.")
                 return None
-            category = self.session.query(Category).filter_by(name=category_name).first()
 
             self.session.delete(category)
             self.session.commit()
             return category
+
         except Exception as e:
             print(f'Error: {e}')
             self.session.rollback()

@@ -1,5 +1,4 @@
 from difflib import get_close_matches
-from itertools import product
 
 from flask import Flask, render_template, redirect, url_for, request, session, flash
 from datetime import timedelta

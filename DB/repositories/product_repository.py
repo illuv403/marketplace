@@ -5,16 +5,19 @@ from DB.models.category import Category
 from DB.models.product import Product
 from DB.database import db_session
 
-"""
-Repository class for managing Product table in a database,
-so CRUD operations
-"""
+
 class ProductRepository:
+    """Repository class for managing Product table in a database.
+
+    Handles CRUD (Create, Read, Update, Delete) operations for the Product model.
+    """
 
     def __init__(self, session=None):
+        """Initialize with optional custom database session."""
         self.session = session or db_session
 
     def create_product(self, name, category_id, price, quantity, exp_date):
+        """Create a new product with specified attributes."""
         try:
             if self.session.query(Product).filter(Product.name == name).first() is not None:
                 print(f"Product with name {name} already exists.")
@@ -29,6 +32,7 @@ class ProductRepository:
             return None
 
     def update_product(self, id, name, category_id, price, quantity, exp_date):
+        """Update an existing product with new attributes."""
         try:
             product = self.session.query(Product).filter_by(id=id).first()
             if not product:
@@ -54,6 +58,7 @@ class ProductRepository:
             return None
 
     def get_all_products(self):
+        """Retrieve all products from the database."""
         try:
             product_list = []
             for product in self.session.query(Product).all():
@@ -63,6 +68,7 @@ class ProductRepository:
             return None
 
     def get_product_by_id(self, id):
+        """Retrieve a product by its ID."""
         try:
             product = self.session.query(Product).filter_by(id=id).first()
             if not product:
@@ -73,6 +79,7 @@ class ProductRepository:
             return None
 
     def get_product_by_name(self, name):
+        """Retrieve a product by its name."""
         try:
             product = self.session.query(Product).filter_by(name=name).first()
             if not product:
@@ -83,6 +90,7 @@ class ProductRepository:
             return None
 
     def get_product_by_quantity(self, quantity):
+        """Retrieve products by their quantity."""
         try:
             product_by_quantity = self.session.query(Product).filter_by(quantity=quantity).all()
             if len(product_by_quantity) == 0:
@@ -93,6 +101,7 @@ class ProductRepository:
             return None
 
     def get_product_by_price(self, price):
+        """Retrieve products by their price."""
         try:
             products_by_price = self.session.query(Product).filter_by(price=price).all()
             if len(products_by_price) == 0:
@@ -103,6 +112,7 @@ class ProductRepository:
             return None
 
     def get_product_by_category(self, category_name):
+        """Retrieve products by their category name."""
         try:
             products_by_cat = (
                 self.session.query(Product).join(Category, Product.category_id == Category.id)
@@ -117,6 +127,7 @@ class ProductRepository:
             return None
 
     def delete_product(self, id):
+        """Delete a product by its ID."""
         try:
             product = self.session.query(Product).filter(Product.id == id).first()
             if not product:
@@ -129,9 +140,10 @@ class ProductRepository:
             return False
 
     def get_product_amount(self):
+        """Retrieve the total count of products in the database."""
         try:
             product_amount = self.session.query(Product).count()
             return product_amount
-        except Exception as e :
+        except Exception as e:
             print("Impossible to get amount of products")
             return None

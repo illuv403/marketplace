@@ -5,18 +5,22 @@ from DB.models.user import User
 
 import bcrypt
 
-"""
-Repository class for managing Order table in a database,
-so CRUD operations
-"""
+
 class UserRepository:
+    """Repository class for managing User table in a database.
+
+    Handles CRUD (Create, Read, Update, Delete) operations for the User model.
+    """
+
     def __init__(self, session=None):
+        """Initialize with optional custom database session."""
         if session is None:
             self.session = db_session
         else:
             self.session = session
 
     def create_user(self, name, surname, login, email, password):
+        """Create a new user with specified attributes and hashed password."""
         try:
             if self.session.query(User).filter_by(login=login).first():
                 print(f'User with login {login} already exists')
@@ -42,6 +46,7 @@ class UserRepository:
             return None
 
     def update_user(self, user_id, name, surname, login, email, password):
+        """Update an existing user's attributes, ensuring unique login and email."""
         try:
             user = self.session.query(User).filter_by(id=user_id).first()
             if user is None:
@@ -82,24 +87,28 @@ class UserRepository:
             return False
 
     def get_user_by_id(self, user_id):
+        """Retrieve a user by their ID."""
         user = self.session.query(User).filter_by(id=user_id).first()
         if user is None:
             return None
         return user
 
     def get_user_by_login(self, login):
+        """Retrieve a user by their login."""
         user = self.session.query(User).filter_by(login=login).first()
         if user is None:
             return None
         return user
 
     def get_user_by_email(self, email):
+        """Retrieve a user by their email."""
         user = self.session.query(User).filter_by(email=email).first()
         if user is None:
             return None
         return user
 
     def delete_user(self, user_id):
+        """Delete a user by their ID."""
         try:
             user = self.session.query(User).filter_by(id=user_id).first()
             if user is None:
@@ -114,6 +123,7 @@ class UserRepository:
 
     @staticmethod
     def check_user_password(user, password):
+        """Verify a user's password using bcrypt."""
         try:
             if bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
                 return True
