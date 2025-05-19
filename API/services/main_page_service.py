@@ -17,8 +17,9 @@ class PageService:
         self.product_repository = ProductRepository(self.session)
         self.category_repository = CategoryRepository(self.session)
         self.order_repository = OrderRepository(self.session)
-        self.product_ids = list(range(1, self.product_repository.get_product_amount()))
-        self.total_pages = math.ceil(self.product_repository.get_product_amount() / 5)
+        self.product_ids = list(range(1, self.product_repository.get_product_amount()+1))
+        self.product_per_page = 5
+        self.total_pages = math.ceil(self.product_repository.get_product_amount() / self.product_per_page)
 
         self.categories_list = []
         self.user_cart = []
@@ -29,7 +30,7 @@ class PageService:
         products = []
         if self.page_products.get(page) is not None:
             return self.page_products.get(page)
-        while len(products) < 5 and len(self.product_ids) > 0:
+        while len(products) < self.product_per_page and len(self.product_ids) > 0:
             rand_id = random.choice(self.product_ids)
             products.append(self.product_repository.get_product_by_id(rand_id))
             self.product_ids.pop(self.product_ids.index(rand_id))
