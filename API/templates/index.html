@@ -53,9 +53,6 @@
                                 </form>
                             </div>
                         </div>
-                        {% if product.quantity == 0 %}
-                            <p style="color:#D53733;">not in stock</p>
-                        {% endif %}
                     </div>
                 </div>
             {% endfor %}
@@ -140,7 +137,7 @@
                 </div>
             </div>
             <form action="{{ url_for('clear_cart') }}" method="post">
-                    <button type="submit" class="clear_button">Clear cart</button>
+                <button type="submit" class="clear_button">Clear cart</button>
             </form>
             <div class="cart-summary">
                 <h3>Order Summary</h3>
